@@ -425,8 +425,8 @@ class CacheHandler(http.server.BaseHTTPRequestHandler):
         if cache_type != "miss":
             # ✅ Cache hit
             # Use the simulated LLM latency (500-1500ms) for realistic comparison
-            actual_time = int((time.time() - t0) * 1000)
-            latency = max(llm_latency, actual_time, 100)  # ensure at least 100ms
+            latency = max(1, int((time.time() - t0) * 1000))  # 1-50ms
+
             self._send_json({
                 "answer":    answer,
                 "cached":    True,
@@ -435,12 +435,11 @@ class CacheHandler(http.server.BaseHTTPRequestHandler):
                 "cacheKey":  cache_key
             })
             return
-
         # ── Cache miss → call LLM ────────────────────────────────────────
         answer, llm_latency = _fake_llm_call(query)
         cache_key = cache.put(query, answer)
-        # Use the LLM's simulated latency (500-1500ms)
-        latency = llm_latency
+        # Use the simulated LLM latency (500-1500ms) - ensures slow response
+        latency = max(llm_latency, 100)  # at least 100ms
 
         self._send_json({
             "answer":    answer,
