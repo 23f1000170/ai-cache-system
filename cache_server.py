@@ -437,8 +437,8 @@ class CacheHandler(http.server.BaseHTTPRequestHandler):
         # ── Cache miss → call LLM ────────────────────────────────────────
         answer, llm_latency = _fake_llm_call(query)
         cache_key = cache.put(query, answer)
-        latency   = max(1, int((time.time() - t0) * 1000))  # ensure at least 1ms
-
+        # Use the LLM's simulated latency (500-1500ms)
+        latency = llm_latency
 
         self._send_json({
             "answer":    answer,
@@ -447,7 +447,6 @@ class CacheHandler(http.server.BaseHTTPRequestHandler):
             "latency":   latency,
             "cacheKey":  cache_key
         })
-
 
 # ─────────────────────────────────────────────
 #  EMBEDDED DASHBOARD  (served at GET /)
