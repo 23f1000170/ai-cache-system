@@ -21,6 +21,8 @@ import random
 import threading
 from collections import OrderedDict
 from urllib.parse import urlparse
+import os
+PORT = int(os.environ.get("PORT", 3000))
 
 # ─────────────────────────────────────────────
 #  CONFIGURATION
@@ -32,7 +34,6 @@ MODEL_COST_PER_1M   = 0.40          # dollars per 1 million tokens
 AVG_TOKENS          = 300           # average tokens per request
 BASELINE_DAILY_COST = 5.28          # dollars (pre-caching baseline)
 DAILY_REQUESTS      = 43_972        # for analytics display
-PORT                = 3000  
 
 # ─────────────────────────────────────────────
 #  SIMPLE EMBEDDING FUNCTION
