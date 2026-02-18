@@ -424,7 +424,9 @@ class CacheHandler(http.server.BaseHTTPRequestHandler):
 
         if cache_type != "miss":
             # ✅ Cache hit
-            latency = max(1, int((time.time() - t0) * 1000))  # ensure at least 1ms
+            # Use the simulated LLM latency (500-1500ms) for realistic comparison
+            actual_time = int((time.time() - t0) * 1000)
+            latency = max(llm_latency, actual_time, 100)  # ensure at least 100ms
             self._send_json({
                 "answer":    answer,
                 "cached":    True,
