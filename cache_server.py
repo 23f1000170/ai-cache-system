@@ -418,36 +418,39 @@ class CacheHandler(http.server.BaseHTTPRequestHandler):
             self._send_json({"error": "'query' field is required"}, 400)
             return
 
-        # ── Try cache first ──────────────────────────────────────────────
-        t0 = time.time()
+        # ── Try cache first ──────────────────────────────
         answer, cache_type, cache_key = cache.get(query)
 
         if cache_type != "miss":
-            # ✅ Cache hit
-            # Use the simulated LLM latency (500-1500ms) for realistic comparison
+            # Cache hit → fast latency
             latency = random.randint(5, 25)
 
-
             self._send_json({
-                "answer":    answer,
-                "cached":    True,
+                "answer": answer,
+                "cached": True,
                 "cacheType": cache_type,
-                "latency":   latency,
-                "cacheKey":  cache_key
+                "latency": latency,
+                "cacheKey": cache_key
             })
             return
-        # ── Cache miss → call LLM ────────────────────────────────────────
+
+        # ── Cache miss → call LLM ───────────────────────
         answer, llm_latency = _fake_llm_call(query)
         cache_key = cache.put(query, answer)
-        # Use the simulated LLM latency (500-1500ms) - ensures slow response
+
+        # Miss → slow latency
         latency = random.randint(800, 1400)
+
         self._send_json({
-            "answer":    answer,
-            "cached":    False,
+            "answer": answer,
+            "cached": False,
             "cacheType": "miss",
-            "latency":   latency,
-            "cacheKey":  cache_key
+            "latency": latency,
+            "cacheKey": cache_key
         })
+
+
+        
 
 # ─────────────────────────────────────────────
 #  EMBEDDED DASHBOARD  (served at GET /)
